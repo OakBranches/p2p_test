@@ -1,12 +1,20 @@
 package com.example.sms;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 
 public class Receiver extends BroadcastReceiver {
@@ -40,20 +48,27 @@ public class Receiver extends BroadcastReceiver {
 
             // The peer list has changed! We should probably do something about
             // that.
-            if(mManager!=null){
-                mManager.requestPeers(mChannel,mActivity.peerListListener);
-            }
+            Log.i("----->","p2p changed action");
+            mManager.requestPeers(mChannel, mActivity.peerListListener);
+                //do something, permission was previously granted; or legacy device
 
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
 
             // Connection state changed! We should probably do something about
             // that.
+            if(mManager==null){
+                return;
+            }
+            NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+            if(networkInfo.isConnected()){
+                mManager.requestConnectionInfo(mChannel,mActivity.connectionInfoListener);
+            }else{
+                mActivity.label.setText("Celular desconectado");
+            }
 
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            /*DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager()
-                    .findFragmentById(R.id.frag_list);
-            fragment.updateThisDevice((WifiP2pDevice) intent.getParcelableExtra(
-                    WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));*/
+            Log.i("----->","DO ANYTHING");
+
 
         }
     }
