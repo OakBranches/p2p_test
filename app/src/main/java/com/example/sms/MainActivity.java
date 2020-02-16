@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
 
                     String msg = editText.getText().toString();
+                    Log.i("mensagem ->>>>",msg);
                     sendReceive.write(msg.getBytes());
 
             }
@@ -251,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public SendReceive(Socket skt){
+            Log.i("SEND RECEIVE","<<<<<FOI CRIADO>>>>>");
             socket =skt;
             try {
                 inputStream = socket.getInputStream();
@@ -261,14 +263,20 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        public void write(byte[] bytes){
+        public void write(final byte[] bytes){
             if(socket!=null) {
-                try {
-                    outputStream.write(bytes);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.i("INSIDE WRITE", "HELLO");
+                            outputStream.write(bytes);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+           }
         }
     }
     public class ServerClass extends Thread{
